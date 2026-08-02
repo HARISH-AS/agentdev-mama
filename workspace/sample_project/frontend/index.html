@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AgentDEV-MAMA Sample Project</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        table { border-collapse: collapse; width: 100%; max-width: 640px; }
+        th, td { border: 1px solid #ccc; padding: 0.5rem 0.75rem; text-align: left; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Employee Table</h1>
+    <input type="text" id="search-input" placeholder="Search employees...">
+    <table id="employee-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody id="employee-table-body">
+            <!-- rows populated by fetchEmployees() -->
+        </tbody>
+    </table>
+
+    <button onclick="downloadCSV()">Download CSV</button>
+
+    <script>
+        async function fetchEmployees(searchText = '') {
+            const response = await fetch(`/api/employees?search=${searchText}`);
+            const employees = await response.json();
+            const tbody = document.getElementById("employee-table-body");
+            tbody.innerHTML = "";
+            employees.forEach(emp => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${emp.id}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.department}</td>
+                    <td>${emp.salary}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        document.getElementById('search-input').addEventListener('input', function() {
+            fetchEmployees(this.value);
+        });
+
+        fetchEmployees();
+
+        function downloadCSV() {
+            window.location.href = "/export";
+        }
+    </script>
+</body>
+</html>
